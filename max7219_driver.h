@@ -11,9 +11,9 @@
 #include "freertos/task.h"
 
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+
+#include "font.h"
 
 #define RETURN_ON_ERR(expr)                                                    \
   do {                                                                         \
@@ -23,6 +23,7 @@
   } while (0)
 
 #define DSP_HEIGHT 8
+#define DSP_WIDTH 8
 
 char *max7219_tag = "MAX7219 DRIVER";
 
@@ -86,6 +87,24 @@ esp_err_t max7219_flush_fb(max7219_t *drv);
 
 // free allocated memory, remove device from bus and free bus itself
 void max7219_cleanup(max7219_t *drv);
+
+esp_err_t fb_set_pixel(max7219_t *drv, uint8_t x, uint8_t y, uint8_t state);
+
+// font related
+esp_err_t get_bitmap(const font_t *font, unsigned char c, const uint8_t **res);
+
+// starts drawing given character at x_pos column.
+// returns invalid_arg in case char wont feet display, char not in font arr
+esp_err_t fb_draw_char(max7219_t *drv, const font_t *font, unsigned char c,
+                       uint8_t x_pos);
+
+// calls fb_draw char with correct position, where distance is pixel between
+// letters returns invalid_arg in case text does not fit
+esp_err_t fb_draw_text(max7219_t *drv, const font_t *font, char *text,
+                       uint8_t x_pos, uint8_t distance);
+
+esp_err_t fb_draw_text_center(max7219_t *drv, const font_t *font, char *text,
+                              uint8_t distance);
 
 void app_main();
 
